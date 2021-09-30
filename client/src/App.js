@@ -23,6 +23,7 @@ class App extends React.Component {
         },
       ],
       clickmemo:{
+        index:'',
         title:'',
         author:'',
         content:'',
@@ -39,17 +40,17 @@ class App extends React.Component {
   }
 
   //수정할 메모는 모달창을 열 때 입력되어있는 state대로 올라갈 수 있도록 한다.
-  reopenModal = (index, event) => {
+  reopenModal = (index) => {
     //reModal창을 열어주자
     this.setState({
       reModalOpen: true, 
       clickmemo:{
+        index:index,
         title:this.state.memos[index].title,
         author:this.state.memos[index].author,
         content:this.state.memos[index].content,
       }
     });
-    //console.log(index,this.state.memos[index]);
   }
 
   recloseModal = () => {
@@ -62,10 +63,27 @@ class App extends React.Component {
     this.setState({memos: [...memos, new_memo]});
   }
 
-  handleUpdate = (index, change_memo) => {
-    console.log(index);
+  handleUpdate = (id, change_memo) => {
+    console.log(id);
     console.log(change_memo);
-  }
+    let memos = this.state.memos;
+    this.setState({
+      memos: memos.map((memos,index) => {
+        if(index === id){
+          console.log(index + '/' + id);
+          return {id, ...change_memo};
+        }
+        return memos;
+      }),
+    });
+  };
+
+  handleRemove = (id) => {
+    let memos = this.state.memos;
+    this.setState({
+      memos: memos.filter((memo,index) => index !== id),
+    });
+  };
 
   render(){
     return(
@@ -78,7 +96,7 @@ class App extends React.Component {
               <tbody>
                 <tr className="trList">
                   {this.state.memos.map((memo,index) =>
-                    <td className="cell" key={index} onClick={(e)=>this.reopenModal(index,e)}>
+                    <td className="cell" key={index} onClick={()=>this.reopenModal(index)}>
                       <div className="inner">
                         <h2>{memo.title}</h2>
                         <h5>{memo.author}</h5>
@@ -101,7 +119,8 @@ class App extends React.Component {
               <Modal isOpen={this.state.isModalOpen} close={this.closeModal} 
                     onCreate={this.handleCreate}/>
               <ReModal reOpen={this.state.reModalOpen} close={this.recloseModal} 
-                    data={this.state.clickmemo} onUpdate={this.handleUpdate}/>
+                    data={this.state.clickmemo} onUpdate={this.handleUpdate}
+                    onRemove = {this.handleRemove}/>
             </main>
         </div>
       </div>
