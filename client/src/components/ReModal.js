@@ -21,7 +21,7 @@ class ReModal extends Component {
         content:'',
         author:''
       });
-      this.props.close();
+      this.props.reclose();
   };
 
   handleChange = (event) => {
@@ -32,7 +32,7 @@ class ReModal extends Component {
   handleRemove = () => {
     console.log(this.props.data.index)
     this.props.onRemove(this.props.data.index);
-    this.props.close();
+    this.props.reclose();
   }
 
   render() {

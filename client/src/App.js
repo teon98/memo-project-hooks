@@ -118,7 +118,7 @@ class App extends React.Component {
             <main className='App'>
               <Modal isOpen={this.state.isModalOpen} close={this.closeModal} 
                     onCreate={this.handleCreate}/>
-              <ReModal reOpen={this.state.reModalOpen} close={this.recloseModal} 
+              <ReModal reOpen={this.state.reModalOpen} reclose={this.recloseModal} 
                     data={this.state.clickmemo} onUpdate={this.handleUpdate}
                     onRemove = {this.handleRemove}/>
             </main>
