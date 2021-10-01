@@ -2,16 +2,23 @@ import React, { PureComponent } from "react";
 import "./Modal.scss";
 
 class ReModal extends PureComponent {
-  //modal이 붙어있어서 memo창을 바로 열었을 때, 지정한 state값이 뜨지 않는다.
-  //modal창이라는 상태를 history에 넣어 pupState를 통해 불러오거나
-  //라우터를 만들어 수정 입력시 reload시키는 방법이 있을 것 같다.
-  //우리가 하는 memo프로젝트는 이 point가 중요한게 아니니 넘어가자
-
+  // 이것은 state 를 정의 및 초기화 하는 코드이다. 컴포넌트가 만들어질때 한번만 호출
+  // 모달창이 두번째 열릴때는 이미 컴포넌트가 만들어졌기 때문에 이 코드는 불리지 않는다.
   state = {
-    title: this.props.data.title,
-    content: this.props.data.content,
-    author: this.props.data.author,
+    title: "",
+    content: "",
+    author: "",
   };
+
+  // props가 변경될때 호출되는 오버라이딩 함수
+  componentWillReceiveProps(nextProps) {
+    // state를 변경하는 방법은 setState 밖에 없다.
+    this.setState({
+      title: nextProps.data.title,
+      content: nextProps.data.content,
+      author: nextProps.data.author,
+    });
+  }
 
   handleUpdate = (event) => {
     event.preventDefault();
