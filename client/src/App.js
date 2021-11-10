@@ -10,18 +10,7 @@ class App extends React.Component {
     this.state = {
       isModalOpen: false,
       reModalOpen: false,
-      memos: [
-        {
-          title: "첫번째 메모",
-          author: "ty",
-          content: "필라테스 4시",
-        },
-        {
-          title: "두번째 메모",
-          author: "ty",
-          content: "웨이트 OT 6시",
-        },
-      ],
+      memos: [],
       clickmemo: {
         index: "",
         title: "",
@@ -29,6 +18,26 @@ class App extends React.Component {
         content: "",
       },
     };
+  }
+
+  //서버와 연결시켜서 데이터를 받게 해보자!
+  componentWillMount() {
+    fetch("/memo", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json:charset=UTF-8",
+        Accept: "application/json",
+      },
+      mode: "cors",
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((memos) => {
+        this.setState({ memos: memos });
+        console.log("Network success - memo : ", memos);
+      })
+      .catch((error) => console.log("Network Error : ", error));
   }
 
   openModal = () => {
