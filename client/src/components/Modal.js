@@ -18,6 +18,7 @@ class Modal extends Component {
       mode: "cors",
       body: JSON.stringify({
         // fetch 특징
+        memoID: this.props.memoID + 1,
         title: this.state.title,
         content: this.state.content,
         author: this.state.author,
@@ -29,7 +30,6 @@ class Modal extends Component {
       })
       .catch((err) => {
         console.log(err);
-        // this.props.close;
       });
   };
 

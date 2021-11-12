@@ -8,16 +8,45 @@ class ReModal extends PureComponent {
     title: "",
     content: "",
     author: "",
+    thisID: 0,
   };
 
   // props가 변경될때 호출되는 오버라이딩 함수
+  // componentWillReceiveProps(nextProps) {
+  //   // state를 변경하는 방법은 setState 밖에 없다.
+  //   this.setState({
+  //     title: nextProps.data.title,
+  //     content: nextProps.data.content,
+  //     author: nextProps.data.author,
+  //   });
+  // }
+
   componentWillReceiveProps(nextProps) {
-    // state를 변경하는 방법은 setState 밖에 없다.
+    const id = nextProps.data.index + 1;
     this.setState({
-      title: nextProps.data.title,
-      content: nextProps.data.content,
-      author: nextProps.data.author,
+      thisID: id,
     });
+
+    fetch(`/memo/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json:charset=UTF-8",
+        Accept: "application/json",
+      },
+      mode: "cors",
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((memo) => {
+        this.setState({
+          title: memo.title,
+          content: memo.content,
+          author: memo.author,
+        });
+        console.log("Network success - memo : ", memo);
+      })
+      .catch((error) => console.log("Network Error : ", error));
   }
 
   handleUpdate = (event) => {
@@ -29,31 +58,29 @@ class ReModal extends PureComponent {
     //   author: "",
     // });
     // this.props.reclose();
-
-    const {id} = event.target;
+    const id = this.state.thisID;
 
     fetch(`/memo/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json;charset=UTF-8",
-          Accept: "application/json",
-        },
-        mode: "cors",
-        body: JSON.stringify({
-          // fetch 특징
-          title: this.state.title,
-          content: this.state.content,
-          author: this.state.author,
-        }),
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+        Accept: "application/json",
+      },
+      mode: "cors",
+      body: JSON.stringify({
+        // fetch 특징
+        title: this.state.title,
+        content: this.state.content,
+        author: this.state.author,
+      }),
+    })
+      .then((response) => {
+        this.props.reclose();
+        return response.json();
       })
-        .then((response) => {
-          this.props.reclose();
-          return response.json();
-        })
-        .catch((err) => {
-          console.log(err);
-          // this.props.close;
-        });
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   handleChange = (event) => {
@@ -65,8 +92,29 @@ class ReModal extends PureComponent {
 
   handleRemove = () => {
     console.log(this.props.data.index);
-    this.props.onRemove(this.props.data.index);
-    this.props.reclose();
+    const id = this.state.thisID;
+
+    fetch(`/memo/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+        Accept: "application/json",
+      },
+      mode: "cors",
+      body: JSON.stringify({
+        // fetch 특징
+        title: this.state.title,
+        content: this.state.content,
+        author: this.state.author,
+      }),
+    })
+      .then((response) => {
+        this.props.reclose();
+        return response.json();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   render() {

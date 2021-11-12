@@ -11,8 +11,9 @@ class App extends React.Component {
       isModalOpen: false,
       reModalOpen: false,
       memos: [],
+      memoID: 0,
       clickmemo: {
-        index: "",
+        memoID: 0,
         title: "",
         author: "",
         content: "",
@@ -35,6 +36,8 @@ class App extends React.Component {
       })
       .then((memos) => {
         this.setState({ memos: memos });
+        //memoID증가시켜줘야해서 데이터 받아올때 현재 개수 셈
+        this.setState({ memoID: this.state.memos.length });
         console.log("Network success - memo : ", memos);
       })
       .catch((error) => console.log("Network Error : ", error));
@@ -64,6 +67,7 @@ class App extends React.Component {
 
   recloseModal = () => {
     this.setState({ reModalOpen: false });
+    window.location.reload();
   };
 
   handleCreate = (new_memo) => {
@@ -133,6 +137,7 @@ class App extends React.Component {
               isOpen={this.state.isModalOpen}
               close={this.closeModal}
               onCreate={this.handleCreate}
+              memoID={this.state.memoID}
             />
             <ReModal
               reOpen={this.state.reModalOpen}
@@ -140,6 +145,7 @@ class App extends React.Component {
               data={{ ...this.state.clickmemo }} //딥카피
               onUpdate={this.handleUpdate}
               onRemove={this.handleRemove}
+              memoID={this.state.memoID}
             />
           </main>
         </div>
