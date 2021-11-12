@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React from "react";
 import "./App.css";
 import plus from "./plus.png";
 import Modal from "./components/Modal";
