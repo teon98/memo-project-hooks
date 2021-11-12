@@ -1,15 +1,18 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const memo = require("../controllers/memoController");
 
-const memoSchema = new mongoose.Schema({
-  index: { type: String, default: true },
-  title: { type: String, required: true },
-  content: { type: String, required: true },
-  author: { type: String, default: false }
-},
-{
-  timestamps: true,
-  collection: 'memos'
-}, );
+const memoSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    content: { type: String, required: true },
+    author: { type: String, default: false },
+  },
+  {
+    timestamps: true,
+    collection: "memos",
+    versionKey: false,
+  }
+);
 
 memoSchema.statics.findAll = function () {
   return this.find({});
@@ -17,23 +20,28 @@ memoSchema.statics.findAll = function () {
 
 memoSchema.statics.create = function (payload) {
   try {
-  const memo = new this(payload);
-  return memo.save();
-  } catch (err){
+    const memo = new this(payload);
+    return memo.save();
+  } catch (err) {
     return err;
   }
 };
 
-memoSchema.statics.update = function (index) {
+memoSchema.statics.update = function (payload) {
   try {
-  const memo = new this(index);
-  return memo.save();
-  } catch (err){
+    const memo = new this(payload);
+    return memo.save();
+  } catch (err) {
     return err;
   }
 };
 
-memoSchema.statics.delete = function (index) {
-  return memo.remove({ index });
+memoSchema.statics.remove = function (payload) {
+  try {
+    const memo = memo.findById(payload).exec();
+    return memo.remove();
+  } catch (err) {
+    return err;
+  }
 };
-module.exports = module.exports = mongoose.model('memo', memoSchema);
+module.exports = module.exports = mongoose.model("memo", memoSchema);
