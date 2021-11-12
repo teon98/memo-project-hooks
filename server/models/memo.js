@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
-const memo = require("../controllers/memoController");
 
 const memoSchema = new mongoose.Schema(
   {
+    memoID: { type: Number, required: true, unique: true },
     title: { type: String, required: true },
     content: { type: String, required: true },
     author: { type: String, default: false },
@@ -10,7 +10,6 @@ const memoSchema = new mongoose.Schema(
   {
     timestamps: true,
     collection: "memos",
-    versionKey: false,
   }
 );
 
@@ -19,29 +18,21 @@ memoSchema.statics.findAll = function () {
 };
 
 memoSchema.statics.create = function (payload) {
-  try {
-    const memo = new this(payload);
-    return memo.save();
-  } catch (err) {
-    return err;
-  }
+  const memo = new this(payload);
+  return memo.save();
 };
 
-memoSchema.statics.update = function (payload) {
-  try {
-    const memo = new this(payload);
-    return memo.save();
-  } catch (err) {
-    return err;
-  }
+memoSchema.statics.findOneByMemoId = function (memoID) {
+  return this.findOne({ memoID });
 };
 
-memoSchema.statics.remove = function (payload) {
-  try {
-    const memo = memo.findById(payload).exec();
-    return memo.remove();
-  } catch (err) {
-    return err;
-  }
+memoSchema.statics.updateByMemoID = function (memoID, payload) {
+  // { new: true }: return the modified document rather than the original. defaults to false
+  return this.findOneAndUpdate({ memoID }, payload, { new: true });
 };
+
+memoSchema.statics.deleteByMemoID = function (memoID) {
+  return this.remove({ memoID });
+};
+
 module.exports = module.exports = mongoose.model("memo", memoSchema);

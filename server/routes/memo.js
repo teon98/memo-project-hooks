@@ -2,11 +2,9 @@ var express = require("express");
 var router = express.Router();
 const memoController = require("../controllers/memoController");
 
-router.get("/", memoController.readAll);
+router.get("/", memoController.findAll);
 router.post("/", memoController.write);
-//테스트용
-router.get("/:memoId", memoController.readOne);
-router.put("/:memoId", memoController.update);
-router.delete("/:memoId", memoController.delete);
-
+router.get("/:memoID", memoController.readOne);
+router.put("/:memoID", memoController.update);
+router.delete("/:memoID", memoController.delete);
 module.exports = router;
