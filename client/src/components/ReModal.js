@@ -22,13 +22,38 @@ class ReModal extends PureComponent {
 
   handleUpdate = (event) => {
     event.preventDefault();
-    this.props.onUpdate(this.props.data.index, this.state);
-    this.setState({
-      title: "",
-      content: "",
-      author: "",
-    });
-    this.props.reclose();
+    // this.props.onUpdate(this.props.data.index, this.state);
+    // this.setState({
+    //   title: "",
+    //   content: "",
+    //   author: "",
+    // });
+    // this.props.reclose();
+
+    const {id} = event.target;
+
+    fetch(`/memo/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json;charset=UTF-8",
+          Accept: "application/json",
+        },
+        mode: "cors",
+        body: JSON.stringify({
+          // fetch 특징
+          title: this.state.title,
+          content: this.state.content,
+          author: this.state.author,
+        }),
+      })
+        .then((response) => {
+          this.props.reclose();
+          return response.json();
+        })
+        .catch((err) => {
+          console.log(err);
+          // this.props.close;
+        });
   };
 
   handleChange = (event) => {

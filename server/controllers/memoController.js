@@ -26,6 +26,32 @@ const memo = {
         } catch (err) {
             res.status(500).send(err);
         }
+    },
+    update: async (req, res) => {
+        try {
+            const result = await Memo.findOneAndUpdate({_id: req.params.id},{
+                title: req.body.title,
+                content: req.body.content,
+                author: req.body,author,
+            })
+            .then((result) => {
+                console.log("result : ", result);
+                res.json(result);
+            })
+        }catch (err) {
+            res.status(500).send(err);
+        }
+    },
+    delete: async (req, res) => {
+        try {
+            const result = await Memo.findOneAndRemove({_id: req.params.id})
+            .then((result) => {
+                console.log("result : ", result);
+                res.json(result);
+            })
+        }catch (err) {
+            res.status(500).send(err);
+        }
     }
 }
 
