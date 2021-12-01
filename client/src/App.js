@@ -1,28 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import plus from "./plus.png";
 import Modal from "./components/Modal";
 import ReModal from "./components/ReModal";
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isModalOpen: false,
-      reModalOpen: false,
-      memos: [],
-      memoID: 0,
-      clickmemo: {
-        memoID: 0,
-        title: "",
-        author: "",
-        content: "",
-      },
-    };
-  }
+const App = () => {
+  //함수 컴포넌트는 constructor가 필요하지 않다.
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [reModalOpen, setReModalOpen] = useState(false);
+  const [memos, setMemos] = useState([]);
+  const [memoID, setMemoID] = useState(0);
+  const [clickmemo, setClickmemo] = useState({
+    title: "",
+    author: "",
+    content: "",
+    index: 0,
+  });
 
-  //서버와 연결시켜서 데이터를 받게 해보자!
-  componentWillMount() {
+  //서버랑 연결시켜서 데이터 불러오기
+  useEffect(() => {
     fetch("/memo", {
       method: "GET",
       headers: {
@@ -35,123 +31,88 @@ class App extends React.Component {
         return res.json();
       })
       .then((memos) => {
-        this.setState({ memos: memos });
+        setMemos(memos);
         //memoID증가시켜줘야해서 데이터 받아올때 현재 개수 셈
-        this.setState({ memoID: this.state.memos.length });
+        setMemoID(memos.length);
         console.log("Network success - memo : ", memos);
       })
       .catch((error) => console.log("Network Error : ", error));
-  }
+  }, []);
 
-  openModal = () => {
-    this.setState({ isModalOpen: true });
+  //새 모달창 열기
+  const openModal = () => {
+    setIsModalOpen(true);
   };
 
-  closeModal = () => {
-    this.setState({ isModalOpen: false });
+  //새 모달창 닫기
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
-  //수정할 메모는 모달창을 열 때 입력되어있는 state대로 올라갈 수 있도록 한다.
-  reopenModal = (index) => {
-    //reModal창을 열어주자
-    this.setState({
-      reModalOpen: true,
-      clickmemo: {
-        index: index,
-        title: this.state.memos[index].title,
-        author: this.state.memos[index].author,
-        content: this.state.memos[index].content,
-      },
+  //기존 모달창 열기
+  const reopenModal = (index) => {
+    setReModalOpen(true);
+    setClickmemo({
+      index: index,
+      title: memos[index].title,
+      author: memos[index].author,
+      content: memos[index].content,
     });
   };
 
-  recloseModal = () => {
-    this.setState({ reModalOpen: false });
+  //기존 모달창 닫기
+  const recloseModal = () => {
+    setReModalOpen(false);
     window.location.reload();
   };
 
-  handleCreate = (new_memo) => {
-    console.log(new_memo);
-    let memos = this.state.memos;
-    this.setState({ memos: [...memos, new_memo] });
-  };
-
-  handleUpdate = (id, change_memo) => {
-    console.log(id);
-    console.log(change_memo);
-    let memos = this.state.memos;
-    this.setState({
-      memos: memos.map((memos, index) => {
-        if (index === id) {
-          console.log(index + "/" + id);
-          return { id, ...change_memo };
-        }
-        return memos;
-      }),
-    });
-  };
-
-  handleRemove = (id) => {
-    let memos = this.state.memos;
-    this.setState({
-      memos: memos.filter((memo, index) => index !== id),
-    });
-  };
-
-  render() {
-    return (
-      <div className="container">
-        <div className="App">
-          <h1>메모장</h1>
-          <br />
-          <br />
-          <table>
-            <tbody>
-              <tr className="trList">
-                {this.state.memos.map((memo, index) => (
-                  <td
-                    className="cell"
-                    key={index}
-                    onClick={() => this.reopenModal(index)}
-                  >
-                    <div className="inner">
-                      <h2>{memo.title}</h2>
-                      <h5>{memo.author}</h5>
-                      <br />
-                      <br />
-                      <h4>{memo.content}</h4>
-                      <br />
-                    </div>
-                  </td>
-                ))}
-                <td className="cell">
-                  <div className="inner" onClick={this.openModal}>
-                    <img src={plus} className="picture" alt="logo" />
+  return (
+    <div className="container">
+      <div className="App">
+        <h1>메모장</h1>
+        <br />
+        <br />
+        <table>
+          <tbody>
+            <tr className="trList">
+              {memos.map((memo, index) => (
+                <td
+                  className="cell"
+                  key={index}
+                  onClick={() => reopenModal(index)}
+                >
+                  <div className="inner">
+                    <h2>{memo.title}</h2>
+                    <h5>{memo.author}</h5>
+                    <br />
+                    <br />
+                    <h4>{memo.content}</h4>
+                    <br />
                   </div>
                 </td>
-              </tr>
-            </tbody>
-          </table>
-          <main className="App">
-            <Modal
-              isOpen={this.state.isModalOpen}
-              close={this.closeModal}
-              onCreate={this.handleCreate}
-              memoID={this.state.memoID}
-            />
-            <ReModal
-              reOpen={this.state.reModalOpen}
-              reclose={this.recloseModal}
-              data={{ ...this.state.clickmemo }} //딥카피
-              onUpdate={this.handleUpdate}
-              onRemove={this.handleRemove}
-              memoID={this.state.memoID}
-            />
-          </main>
-        </div>
+              ))}
+              <td className="cell">
+                <div className="inner" onClick={openModal}>
+                  <img src={plus} className="picture" alt="logo" />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <main className="App">
+          <Modal isOpen={isModalOpen} close={closeModal} memoID={memoID} />
+          <ReModal
+            reOpen={reModalOpen}
+            reclose={recloseModal}
+            data={{ ...clickmemo }} //딥카피
+            //onUpdate={handleUpdate}
+            //onRemove={handleRemove}
+            memoID={memoID}
+          />
+        </main>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default App;
